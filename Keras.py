@@ -123,24 +123,24 @@ def cnn_model_3():
         input_shape = (img_width, img_height, 3)
 
     model = Sequential()
-    model.add(Conv2D(32, kernel_size=(3, 3), padding='same', use_bias=True, input_shape=input_shape))
+    model.add(Conv2D(32, kernel_size=(3, 3), padding='same', input_shape=input_shape))
     model.add(Activation('relu'))
     model.add(Conv2D(32, kernel_size=(3, 3)))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
 
-    model.add(Conv2D(64, kernel_size=(3, 3), padding='same', use_bias=True))
+    model.add(Conv2D(64, kernel_size=(3, 3), padding='same'))
     model.add(Activation('relu'))
     model.add(Conv2D(64, kernel_size=(3, 3)))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
 
     model.add(Flatten())
-    model.add(Dense(1024, use_bias=True))
+    model.add(Dense(1024))
     model.add(Activation('relu'))
-    model.add(Dense(512, use_bias=True))
+    model.add(Dense(512))
     model.add(Activation('relu'))
-    model.add(Dense(num_classes, use_bias=True))
+    model.add(Dense(num_classes))
     model.add(Activation('softmax'))
 
     opt = keras.optimizers.rmsprop(lr=0.0001, decay=1e-6)
@@ -284,16 +284,16 @@ if __name__ == '__main__':
     print("####################################################################################")
     print("###################################  CNN1  #########################################")
     print("####################################################################################")
-    #model_cnn_1 = cnn_model_1()
-    #m1_model, m1_hist, m1_score = train_test_evaluate(model_cnn_1, train_gen, val_gen, nb_train_samples,
-    #                                                  nb_validation_samples, batch_size, epochs, "CNN1")
+    model_cnn_1 = cnn_model_1()
+    m1_model, m1_hist, m1_score = train_test_evaluate(model_cnn_1, train_gen, val_gen, nb_train_samples,
+                                                      nb_validation_samples, batch_size, epochs, "CNN1")
 
     print("####################################################################################")
     print("###################################  CNN2  #########################################")
     print("####################################################################################")
-    #model_cnn_2 = cnn_model_2()
-    #m2_model, m2_hist, m2_score = train_test_evaluate(model_cnn_2, train_gen, val_gen, nb_train_samples,
-    #                                                  nb_validation_samples, batch_size, epochs, "CNN2")
+    model_cnn_2 = cnn_model_2()
+    m2_model, m2_hist, m2_score = train_test_evaluate(model_cnn_2, train_gen, val_gen, nb_train_samples,
+                                                      nb_validation_samples, batch_size, epochs, "CNN2")
 
     print("####################################################################################")
     print("###################################  CNN3  #########################################")
@@ -305,6 +305,6 @@ if __name__ == '__main__':
     print("####################################################################################")
     print("###################################  LeNet  ########################################")
     print("####################################################################################")
-    #model_lenet = cnn_model_lenet()
-    #m4_model, m4_hist, m4_score = train_test_evaluate(model_lenet, train_gen, val_gen, nb_train_samples,
-    #                                                  nb_validation_samples, batch_size, epochs, "LeNet")
+    model_lenet = cnn_model_lenet()
+    m4_model, m4_hist, m4_score = train_test_evaluate(model_lenet, train_gen, val_gen, nb_train_samples,
+                                                      nb_validation_samples, batch_size, epochs, "LeNet")
