@@ -1,0 +1,107 @@
+\documentclass[a4paper, oneside, 12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{graphicx, changepage}
+\graphicspath{ {pictures/} }
+\usepackage{subfig}
+\usepackage{color, soul}
+\usepackage{hyperref}
+\usepackage[]{url}
+\usepackage[cache=false]{minted}
+%\usepackage{subfigure}
+\usepackage{textcomp}
+\usepackage[nohyperlinks, withpage]{acronym}
+%\usepackage{array}
+%\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage{pgfplots}
+\usepackage{pdfpages}
+\geometry{a4paper, top=35mm, left=30mm, right=25mm, bottom=35mm, headsep=10mm, footskip=12mm}
+\usepackage[backend=biber, style=numeric, citestyle=numeric]{biblatex}
+
+\apptocmd{\UrlBreaks}{\do\f\do\m}{}{}
+\setcounter{biburllcpenalty}{9000}% Kleinbuchstaben
+\setcounter{biburlucpenalty}{9000}% Großbuchstaben
+
+\addbibresource{kibib.bib}
+
+\newenvironment{code}{\captionsetup{type=listing}}{}
+
+
+
+\begin{document}
+
+%\frontmatter
+%maketitel
+
+\begin{titlepage}
+{
+\centering
+\textsc{\LARGE Hochschule Pforzheim} \par 
+\vspace{0.3cm}
+\textsc{\LARGE Fakultät für Technik} \par 
+\vspace{1.0cm}
+\textsc{\Large Masterstudiengang Embedded Systems} \par 
+\vspace{5.0cm}
+\textsc{\Large Ausarbeitung} \par 
+\vspace{1.0cm}
+\huge\textbf{Künstliche Intelligenz} \par 
+\vspace{6.3cm}
+\Large 
+}
+
+\textbf{Prüfer} \hfill Prof. Dr. rer. pol. Raphael Volz \par %Name
+\textbf{Autor} \hfill Anna-Lena Marx \par 
+\textbf{Matrikelnummer} \hfill 317593 \par
+\vspace{2.0cm}
+\textbf{Abgabedatum} \hfill \today
+
+
+\end{titlepage}
+
+%\includepdf{pics/titelpage_bea}
+
+
+\newpage
+
+
+
+
+\pagestyle {headings}
+%\quad
+%\newpage
+%\input{explanation}
+%\newpage
+%\quad
+%\newpage
+%\input{abstract}
+
+
+\tableofcontents
+\newpage
+
+%mainpart
+%\mainmatter
+
+
+%\input{file}
+\input{Einleitung}
+\input{Laden_des_Datensatzes}
+
+
+
+\newpage \appendix
+
+\input{Anhang}
+
+%\nocite{*}
+%addcontentsline
+\printbibliography
+
+\listoflistings
+\listoffigures
+\listoftables
+
+
+\end{document}

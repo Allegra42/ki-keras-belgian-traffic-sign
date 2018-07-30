@@ -208,15 +208,16 @@ def cnn_model_lenet():
 
 
 def setup_data():
-    # this is the augmentation configuration we will use for training
+    #download_data()
+
+    # this is the augmentation configuration used for training
     train_datagen = ImageDataGenerator(
         rescale=1. / 255,
         shear_range=0.3,
         zoom_range=0.3,
-        horizontal_flip=True,
-        validation_split=0.1)
+        horizontal_flip=True)
 
-    # this is the augmentation configuration we will use for testing:
+    # this is the augmentation configuration used for testing:
     # only rescaling
     valid_datagen = ImageDataGenerator(rescale=1. / 255)
 
