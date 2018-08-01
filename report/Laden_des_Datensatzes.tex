@@ -67,11 +67,13 @@ Bevor die Datensätze für Training und Validierung zur weiteren Verwendung eing
 \\
 Ein Blick auf die Referenzimplementierung zu dieser Hausarbeit von Professor Volz zeigt den Aufwand, der in TensorFlow notwendig ist, um die Bilddaten zu laden und für das Verwendung in einem neuronalen Netz vorzubereiten. Keras kann diesen Prozess deutlich vereinfachen. Neben gewöhnlichem Laden der Daten bietet Keras mit der Klasse \texttt{ImageDataGenerator} und deren Methode \texttt{flow\_from\_directory} eine sehr einfache aber unheimlich mächtige Möglichkeit Bilddaten direkt aus einer Verzeichnisstruktur wie für den hier verwendeten Datensatz vorhanden auszulesen und für die weitere Verwendung vorzubereiten. Dies umfasst nicht nur gewöhnliches Preprocessing der Bilddaten, wie die Änderung und Vereinheitlichung der Bildgröße oder Ändern des Farbmodus, auch eine Echtzeit-Erweiterung des Datensatzes durch z.B. Verzerrung oder Rotation ist möglich. An dieser Stelle könnte auch eine Aufspaltung der Trainingsdaten in Trainings- und Testdatensätze erfolgen, aber aus den bereits im Abschnitt \textsc{Der Datensatz} genannten Gründen ist dies hier nicht sinnvoll.\\
 \\
-Die im folgenden Listing \ref{lst:load-data} abgebildete Methode stammt aus dem Quellcode \texttt{Keras.py} und zeigt, wie Trainings- und Validierungsdatensatz jeweils für das Training der neuronalen Netze geladen werden. \\
+Die im folgenden Listing \ref{lst:load-data} abgebildete Methode stammt aus dem Quellcode \texttt{Keras.py} und zeigt, wie Trainings- und Validierungsdatensatz jeweils für das Training der neuronalen Netze geladen werden.
 Ab Zeile 5 wird ein Objekt der Klasse \texttt{ImageDataGenerator} für die Generierung der Trainingsdaten angelegt. Bei diesen soll eine Erweiterung (Augmentation) der teils wenigen vorhandenen Bilder stattfinden, um eine breitere Datenbasis für das Training zu erreichen. Der erste Parameter, \texttt{rescale} gibt einen Skalierungsfaktor an, hat aber mit der Erweiterung der Datenbasis nichts zu tun. Diese wird über die folgenden Parameter \texttt{shear\_range}, \texttt{zoom\_range} und \texttt{horizontal\_flip} gesteuert. \\
 Für die Validierungsdaten wird auf eine Erweiterung der Daten verzichtet, um die Resultate der Modelle vergleichbar mit anderen Ansätzen zu halten (Zeile 13).\\
 \\
-Das Laden der Bilddaten aus den Verzeichnissen erfolgt dann äquivalent für beide Datensätze über die Methode \texttt{flow\_from\_directory}, die auf dem jeweiligen \texttt{ImageDataGenerator} Objekt aufgerufen wird (ab Zeile 15 bzw. 22). Für beide wird zuerst der Pfad, von dem die Bilddateien geladen werden sollen angegeben, z.B. \texttt{/data/Training}. Mit dem nächsten Parameter, \texttt{target\_size} wird die Zielgröße der Bilder für, in diesem Fall, die Eingabe in ein neuronales Netz definiert. In dem beschriebenen Projekt wird eine Zielgröße von 32x32 Pixeln verwendet. Die \texttt{batch\_size} gibt an wie viele Bilddateien in einem Schritt verarbeitet werden sollen. Weiter könnte man über den Parameter \texttt{colormode} die Bilddaten zu Grauwertbildern konvertieren. Allerdings wurde die Entscheidung getroffen das Netz für diese Arbeit auf Basis von Farbbildern zu trainieren.
+Das Laden der Bilddaten aus den Verzeichnissen erfolgt dann äquivalent für beide Datensätze über die Methode \texttt{flow\_from\_directory}, die auf dem jeweiligen\\
+\texttt{ImageDataGenerator} Objekt aufgerufen wird (ab Zeile 15 bzw. 22). Für beide wird zuerst der Pfad, von dem die Bilddateien geladen werden sollen angegeben, z.B. \\
+\texttt{/data/Training}. Mit dem nächsten Parameter, \texttt{target\_size} wird die Zielgröße der Bilder für, in diesem Fall, die Eingabe in ein neuronales Netz definiert. In dem beschriebenen Projekt wird eine Zielgröße von 32x32 Pixeln verwendet. Die \texttt{batch\_size} gibt an wie viele Bilddateien in einem Schritt verarbeitet werden sollen. Weiter könnte man über den Parameter \texttt{colormode} die Bilddaten zu Grauwertbildern konvertieren. Allerdings wurde die Entscheidung getroffen in diese Arbeit Farbbildern zu nutzen.
 
 \begin{listing} [ht]
 	\caption{Laden der Trainings- und Validierungsdatensätze}
@@ -113,11 +115,312 @@ Bei den Rückgabewerten (Zeile 29) handelt es sich um \texttt{DirectoryIterator}
 Details zu den hier verwendeten Keras Methoden können in der API unter \url{https://keras.io/preprocessing/image/} und \url{https://keras.io/preprocessing/image/#imagedatagenerator-methods} nachgelesen werden.
 
 \section{Entwurf der Modellarchitekturen}
-%Layer an sich
-%Architekturen für die einzelnen Netze
+Für diese Arbeit wurden drei Modellarchitekturen, die auf einander aufbauen, entworfen. Um eine Orientierung für die Leistungsfähigkeit solcher Netze zu erhalten und die eigenen Modelle dagegen zu vergleichen wurde zusätzlich eine öffentlich verfügbare Implementierung von den bekannten neuronalen Netz \textit{LeNet} zu Keras 2 portiert und an die Eingabedaten angepasst. \\
+\\
+Bei allen vier Modellarchitekturen handelt es sich um sogenannte \textit{Convolutional Neural Networks} (CNN). Dieser Architekturtyp eignet sich besonders für die Klassifikation von Bildern, kann aber auch für andere Eingabedaten, wie z.B. Audio-Daten, verwendet werden. Eine Convolution ist zu deutsch eine Faltung, also eine mathematische Operation, die ebenso in der Bildverarbeitung eingesetzt wird um beispielsweise Kanten im Bild zu hervorzuheben und zu erkennen.
+In den CNNs wird diese Technik häufig zusammen mit \textit{Pooling} genutzt, um so genannte \textit{Features}, also interessante Kanten, Formen oder dominierende Farben in Ausschnitten des Eingangsbildes zu finden. Über \textit{Fully Connected Layer}, also Schichten bei denen jeder Knoten einer Schicht mit jedem der folgenden Verknüpft ist, wird aus den Features, die durch Convolution und Pooling gewonnen wurden, entschieden wie das Eingabebild kategorisiert werden soll \cite{nn-zoo}.
+Eine ausführlichere Beschreibung zu CNNs aber auch vielen anderen Modellarchitekturen ist unter \url{http://www.asimovinstitute.org/neural-network-zoo/} zu finden. Dort ist ebenfalls das Paper \cite{lecun-98} von Yann LeCun et al. verlinkt, auf dem die Modell-Implementierung \textit{LeNet}, die zum Vergleich mit den eigenen Modellen verwendet werden soll, beruht.
+
+\subsection{Layer}
+Bevor die Implementierung der Netze im Detail betrachtet wird, sollen zuerst die einzelnen Layer, die in den hier erstellten Modellen Verwendung finden, erläutert werden. Die Layer sind hierbei etwa in der Reihenfolge, in der sie in den Modellen genutzt werden, aufgeführt.
+
+\begin{itemize}
+	\item \textbf{Conv2D}\\
+	Der \textit{Conv2D} Layer realisiert die schon beschriebene Faltung im zweidimensionalen Raum.
+	%
+	\item \textbf{MaxPooling2D} \\
+	Mit einem \textit{MaxPooling2D} Layer soll die Größe der zu verarbeitenden Bilddaten und damit des Rechenaufwands reduziert werden, ohne relevante Informationen (Features) zu verlieren. Ein Bild ist eine Matrix aus Farb- bzw. Helligkeitsinformationen, z.B. mit der Größe 4x4. Durch \textit{MaxPooling} wird diese Matrix in z.B. vier Teilbereiche aufgeteilt und aus jedem nur der höchste Wert in eine 2x2 Matrix übernommen. Werden wie in dieser Arbeit RGB-Bilddaten verwendet, arbeitet das Netz für jeden Farbkanal auf einer eigenen Matrix.
+	%
+	\item \textbf{Activation} \\
+	Bei \textit{Activation} handelt es sich nicht um eine Schicht in dem Sinne. Hiermit wird eine Aktivierungsfunktion zu dem Output des vorhergehenden Layers hinzugefügt. Dies kann zwar auch über den Parameter \texttt{activation} der anderen Layer selbst geschehen, für eine bessere Lesbarkeit wurde allerdings entschieden die Aktivierung für diese Arbeit über Activation-Layer zu realisieren. Verfügbare Aktivierungsfunktionen sind beispielsweise: \begin{itemize}
+		\item softmax - Softmax Aktivierungsfunktion
+		\item elu - Exponentiell lineare Einheit
+		\item softplus - Softplus Aktivierungsfunktion
+		\item softsign - Softsign Aktivierungsfunktion
+		\item relu - Rectified Linear Unit		oder die
+		\item sigmoid - Sigmoid Aktivierungsfunktion		
+	\end{itemize}
+	%
+	\item \textbf{Dropout} \\
+	Bei einem \textit{Dropout} Layer handelt es sich um eine Methode, um die Gefahr von \textit{Overfitting} (Überanpassung) eines Modells an den Trainingsdatensatz zu verhindern. Dropout inaktiviert dabei eine bestimmte Quote von Neuronen in einem Layer, sodass diese nicht für die Berechnung verwendet werden.
+	%
+	\item \textbf{Flatten}\\
+	Der \textit{Flattening} Layer ist einer der wichtigsten Bestandteile eines CNNs. Im ersten Teil eines solchen werden in der Regel zweidimensionale Bilder verarbeitet. Zur Klassifikation ist es notwendig die aus Convolution und Pooling hervorgehenden Ergebnisse in einen eindimensionalen kontinuierlichen Vektor zu transferieren. Dies geschieht durch diesen Layer. 
+	%
+	\item \textbf{Dense} \\
+	Bei \textit{Dense} handelt es sich um einen \textit{fully connected layer}, bei dem alle Knoten (Neuronen) des Layers mit denen des folgenden verbunden sind. 
+	%
+	
+\end{itemize}
+\subsection{Aufbau eines Modells}
+Als Grundlage für jedes hier verwendete Modell dient die \texttt{Sequential} model API von Keras. Ein \texttt{Sequential} Modell kann durch \texttt{model = Sequential()} erzeugt werden. Die einzelnen Layer können durch die Methode \texttt{model.add(<Layer>)} hinzugefügt werden.
+Bei einem sequenziellen Modell werden die einzelnen Layer linear durchlaufen. Dabei haben \textit{Convolutional Neural Networks}, wie sie hier zum Einsatz kommen sollen, in der Regel folgenden Grobaufbau:
+\begin{enumerate}
+	\item Convolution Layer
+	\item Pooling Layer
+	\item Flattening Layer
+	\item Fully Connected Layer
+\end{enumerate} \ \\
+Oft werden dabei Bündel aus Convolution und Pooling gebildet, die mehrfach wiederholt werden. Anschließend wird üblicherweise ein Flattening Layer verwendet, um einen eindimensionalen Ergebnisvektor zu erzeugen, bevor mehrere Fully Connected Layer folgen. Bei dem Ausgangslayer handelt es sich in der Regel um einen Fully Connected Layer, bei dem die Anzahl der Neuronen der Anzahl der Klassen entspricht. \\
+\\
+Bevor ein Modell trainiert werden kann, ist es notwendig es zu \textit{compilieren}. Dies geschieht durch die Methode \texttt{model.compile()}, die drei Argumente entgegen nimmt:
+
+\begin{itemize}
+	\item den Optimierer (optimizer), Keras bietet verschiedene Optimierungsfunktionen zur Verwendung an. Es handelt sich dabei um mathematische Funktionen zur Fehlerminimierung. 
+	\item die Verlustfunktion/Zielfunktion (loss function), beschreibt das Ziel für welches ein neuronales Netz optimiert werden soll. Nicht jede Funktion eignet sich für jede Aufgabe. Für eine Klassifizierungsaufgabe mit mehr als zwei Klassen wird \texttt{categorical\_crossentropy} sehr häufig eingesetzt.
+	\item eine Liste von Metriken (metrics), die während Training und Testing ausgewertet werden sollen. Üblicherweise wird hier \texttt{metrics=['accuracy']} verwendet.
+\end{itemize}
+
+
+\subsection{Die Modelle}
+Für diese Arbeit wurden drei Modelle als \textit{Convolutional Neural Network} entworfen. Modell zwei und drei wurden jeweils ausgehend von dem vorherigen weiter entwickelt. Bei dem ersten Modell handelt es sich um eine möglichst einfache Basisimplementierung. Um einen Vergleich zu den selbst entwickelten Modellen zu erhalten, wurde zusätzlich eine Implementierung von \textit{LeNet} \cite{kaggle-lenet} nach Keras 2 portiert und an die Aufgabenstellung angepasst.
+Da die einzelnen Layer schon beschrieben wurden, soll im Folgenden nur deren Zusammenstellung als Architektur für die einzelnen Modelle betrachtet werden.
+ 
+\subsubsection{CNN1}
+Bei \textit{CNN1} handelt es sich um eine sehr einfache, naive Implementierung eines Convolutional Neural Networks. Mit nur einem Convolution Layer, einem Flattening Layer und zwei Fully Connected Layern, wovon einer die Ausgabeschicht darstellt, ist das Netz sogar noch einfacher als der in Abschnitt 6.2 vorgestellte Grobaufbau. Auf einen Pooling Layer wurde komplett verzichtet. 
+Die Abbildung \ref{pic:summary-cnn1} stellt ebenfalls die Architektur des Modells dar. Unter \textit{Output Shape} wird dabei das Format des Eingangsdatums nach der jeweiligen Schicht aufgeführt, während unter \textit{Param} die Anzahl der Parameter der Schicht abgebildet sind, die während des Trainings optimiert werden.
+
+\begin{listing} [H]
+	\caption{Implementierung CNN1}
+	\label{lst:cnn1}
+	\begin{minted}[frame=lines, framesep=2mm, fontsize=\footnotesize, linenos]{python}
+def cnn_model_1():
+  model = Sequential()
+  model.add(Conv2D(2, kernel_size=(5, 5), 
+            strides=(2, 2),
+            padding='same',
+            input_shape=input_shape))
+  model.add(Activation('relu'))
+
+  model.add(Flatten())
+  model.add(Dense(200))
+  model.add(Activation('relu'))
+  model.add(Dense(num_classes))
+  model.add(Activation('softmax'))
+
+  model.compile(loss='categorical_crossentropy',
+                optimizer='adam',
+                metrics=['accuracy'])
+
+return model
+	\end{minted}
+\end{listing} 
+
+\begin{figure} [H]
+	\centering
+	\includegraphics[scale=0.6]{SummaryCNN1}
+	\caption{Zusammenfassung der Architektur für das Modell CNN1}
+	\label{pic:summary-cnn1}
+\end{figure}
+
+\subsubsection{CNN2}
+
+\begin{listing} [H]
+	\caption{Implementierung CNN2}
+	\label{lst:cnn2}
+	\begin{minted}[frame=lines, framesep=2mm, fontsize=\footnotesize, linenos]{python}
+def cnn_model_2():
+  model = Sequential()
+  model.add(Conv2D(32, kernel_size=(3, 3), padding='same',
+            input_shape=input_shape))
+  model.add(Activation('relu'))
+  model.add(Conv2D(32, kernel_size=(3, 3)))
+  model.add(Activation('relu'))
+  model.add(MaxPooling2D(pool_size=(2, 2)))
+  model.add(Dropout(0.25))
+
+  model.add(Conv2D(64, kernel_size=(3, 3), padding='same'))
+  model.add(Activation('relu'))
+  model.add(Conv2D(64, kernel_size=(3, 3)))
+  model.add(Activation('relu'))
+  model.add(MaxPooling2D(pool_size=(2, 2)))
+  model.add(Dropout(0.25))
+
+  model.add(Flatten())
+  model.add(Dense(512))
+  model.add(Activation('relu'))
+  model.add(Dropout(0.5))
+  model.add(Dense(num_classes))
+  model.add(Activation('softmax'))
+
+  opt = keras.optimizers.rmsprop(lr=0.0001, decay=1e-6)
+  model.compile(loss='categorical_crossentropy', 
+                optimizer=opt,
+                metrics=['accuracy'])
+
+  return model
+	\end{minted}
+\end{listing} 
+
+\begin{figure} [H]
+	\centering
+	\includegraphics[scale=0.6]{SummaryCNN2}
+	\caption{Zusammenfassung der Architektur für das Modell CNN2}
+	\label{pic:summary-cnn2}
+\end{figure}
+
+\subsubsection{CNN3}
+
+\begin{listing} [H]
+	\caption{Implementierung CNN3}
+	\label{lst:cnn3}
+	\begin{minted}[frame=lines, framesep=2mm, fontsize=\footnotesize, linenos]{python}
+def cnn_model_3():
+  model = Sequential()
+  model.add(Conv2D(16, kernel_size=(3, 3), padding='same',
+            input_shape=input_shape))
+  model.add(Activation('relu'))
+  model.add(Conv2D(16, kernel_size=(3, 3)))
+  model.add(Activation('relu'))
+  model.add(MaxPooling2D(pool_size=(2, 2)))
+  model.add(Dropout(0.125))
+
+  model.add(Conv2D(32, kernel_size=(3, 3), padding='same'))
+  model.add(Activation('relu'))
+  model.add(Conv2D(32, kernel_size=(3, 3)))
+  model.add(Activation('relu'))
+  model.add(MaxPooling2D(pool_size=(2, 2)))
+  model.add(Dropout(0.125))
+
+  model.add(Conv2D(64, kernel_size=(3, 3), padding='same'))
+  model.add(Activation('relu'))
+  model.add(Conv2D(64, kernel_size=(3, 3)))
+  model.add(Activation('relu'))
+  model.add(MaxPooling2D(pool_size=(2, 2)))
+  model.add(Dropout(0.125))
+
+  model.add(Flatten())
+  model.add(Dense(1024))
+  model.add(Activation('relu'))
+  model.add(Dense(512))
+  model.add(Activation('relu'))
+  model.add(Dropout(0.4))
+  model.add(Dense(num_classes))
+  model.add(Activation('softmax'))
+
+  opt = keras.optimizers.rmsprop(lr=0.0001, decay=1e-6)
+  model.compile(loss='categorical_crossentropy',
+                optimizer=opt,
+                metrics=['accuracy'])
+
+  return model	
+	\end{minted}
+\end{listing} 
+
+\begin{figure} [H]
+	\centering
+	\includegraphics[scale=0.7]{SummaryCNN3}
+	\caption{Zusammenfassung der Architektur für das Modell CNN3}
+	\label{pic:summary-cnn3}
+\end{figure}
+
+\subsubsection{LeNet}
+
+\begin{listing} [H]
+	\caption{Implementierung LeNet}
+	\label{lst:lenet}
+	\begin{minted}[frame=lines, framesep=2mm, fontsize=\footnotesize, linenos]{python}
+def cnn_model_lenet():
+  model = Sequential()
+
+  model.add(Conv2D(6, kernel_size=(5, 5), input_shape=input_shape,
+            use_bias=True,padding="same"))
+  model.add(Activation('relu'))
+  model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding="same"))
+  model.add(Dropout(rate=0.12))
+
+  model.add(Conv2D(16, kernel_size=(5, 5), use_bias=True, padding="same"))
+  model.add(Activation('relu'))
+  model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding="same"))
+
+  model.add(Conv2D(35, kernel_size=(5, 5), use_bias=True, padding="same"))
+  model.add(Activation('relu'))
+  model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding="same"))
+
+  model.add(Flatten())
+  model.add(Dense(120, use_bias=True))
+  model.add(Activation('relu'))
+  model.add(Dropout(rate=0.5))
+  model.add(Dense(84, use_bias=True))
+  model.add(Activation('relu'))
+  model.add(Dense(num_classes, use_bias=True))
+  model.add(Activation('softmax'))
+
+  model.compile(optimizer=Adam(lr=0.001),
+                loss="categorical_crossentropy",
+                metrics=['accuracy'])
+
+  return model	
+	\end{minted}
+\end{listing} 
+
+\begin{figure} [H]
+	\centering
+	\includegraphics[scale=0.6]{SummaryLeNet}
+	\caption{Zusammenfassung der Architektur für das Modell LeNet}
+	\label{pic:summary-lenet}
+\end{figure}
 
 \section{Training der Modelle}
+Dass für das Einlesen der Bilddaten der \texttt{ImageDataGenerator} verwendet wurde, macht sich auch beim Training der Modelle bezahlt.
+Auf den Modellen kann die Methode \texttt{fit\_generator} (Listing \ref{lst:training}, Zeile 5) aufgerufen werden, die ein Batch-basiertes Training auf Basis der \texttt{DirectoryIterator} Objekte anstößt, die von der Methode \texttt{setup\_data} aus Listing \ref{lst:load-data} zurückgegeben wurden. Der Generator selbst läuft parallel zum Training, um die Erweiterung des Datensatzes in Echtzeit zu realisieren.
+Der \texttt{fit\_generator} nimmt dabei zum einen den \texttt{DirectoryIterator} der Trainingsbilder (\texttt{\_train\_generator}) als Argument, aber auch den der Validierierungsdaten (\texttt{\_val\_generator}). Dies bedeutet aber nicht, dass das Modell mit den Validierungsdaten trainiert wird, sondern, dass zum Abschluss jeder Epoche, also jedes Trainingsschritts, das bisherige Modell einmal an den Validierungsdaten getestet wird. Dabei handelt es sich um einen optionalen Schritt, der keine Auswirkung auf das Modell selbst hat.
+Bei den Argumenten \texttt{steps\_per\_epoch} und \texttt{validation\_steps} wurde der Wert entsprechend der Empfehlung der Keras API auf die Anzahl der Bilddateien des jeweiligen Datensatzes geteilt durch die Größe eines Batches gesetzt. Der Wert für die Anzahl der Epochen wird beim Aufruf des Trainings übergeben und hier willkürlich auf 50 gesetzt (siehe Listing \ref{lst:start-training}).
 
+\begin{listing} [ht]
+	\caption{Training und Auswertung der Modelle}
+	\label{lst:training}
+	\begin{minted}[frame=lines, framesep=2mm, fontsize=\footnotesize, linenos]{python}
+def train_test_evaluate(_model, _train_generator, _val_generator,
+				_nb_train_samples, _nb_val_samples,
+				_batch_size, _epochs, _model_name):
+	
+  _hist = _model.fit_generator(_train_generator,
+                               steps_per_epoch=_nb_train_samples // _batch_size,
+                               epochs=_epochs,
+                               validation_data=_val_generator,
+                               validation_steps=_nb_val_samples // _batch_size)
+	
+  _score = _model.evaluate_generator(_val_generator, _nb_val_samples)
+  print("Score for model: Test loss: ", _score[0])
+  print("Score for model: Test accuracy: ", _score[1])
+	
+  _model.summary()
+  plot_loss_accuracy(_hist, _epochs, _model_name)
+  _model.save("./models/" + _model_name + ".h5")
+	
+  return _model, _hist, _score
+	\end{minted}
+\end{listing} \ \\
+%
+Die Methode \texttt{fit\_generator} liefert als Rückgabewert ein \texttt{History} Objekt, dass die Metriken des Trainings und der Validierung für jede Epoche enthält. Dies wird genutzt, um die Resultate für jedes Modell grafisch darzustellen \ref{lst:training}, Zeile 16. Die Implementierung der Funktion kann im beiliegenden Quellcode nachvollzogen werden. \\
+\\
+Analog zur Trainingsmethode \texttt{fit\_generator} wird zur Validierung des Modells die Methode \texttt{evaluate\_generator} verwendet. Diese evaluiert das fertig trainierte Modell wie es schon als Teil des Trainings für jede Epoche geschehen ist. Zurückgegeben wird ein Score bestehend aus \textit{loss} und \textit{accuracy} des Modells. \\ 
+\\
+Abschließend werden weitere Informationen zum Modell geloggt. Mit der Methode \texttt{summary} aus Listing \ref{lst:training}, Zeile 15 wird eine Überblick über die Architektur des Modells und die einzelnen Layer sowie deren Parameter ausgegeben. Wie schon erwähnt werden die Trainings- und Validierungsergebnisse grafisch aufbereitet und wie auch das Modell selbst gespeichert (Zeile 17). Ein trainiertes Modell kann einfach gespeichert werden, sodass es ohne erneutes Training z.B. in einer Anwendung eingesetzt werden kann. \\
+\\
+Das folgende Listing \ref{lst:start-training} zeigt einen Ausschnitt aus der Main-Funktion des Programms, mit dem die Daten vorbereitet und das Training, exemplarisch für das erste Modell, gestartet wird. Die genutzten Parameter \texttt{epochs} und \texttt{batch\_size} sind dabei willkürlich, aber in sinnvollen Grenzen, gewählt.
+
+\begin{listing} [ht]
+	\caption{Starten des Trainings exemplarisch für das erste Modell}
+	\label{lst:start-training}
+	\begin{minted}[frame=lines, framesep=2mm, fontsize=\footnotesize, linenos]{python}
+if __name__ == '__main__':
+  nb_train_samples = 4575
+  nb_validation_samples = 2520
+  epochs = 50
+  batch_size = 16
+
+  train_gen, val_gen = setup_data()
+
+  model_cnn_1 = cnn_model_1()
+  m1_model, m1_hist, m1_score = train_test_evaluate(model_cnn_1, train_gen,
+                                                    val_gen, nb_train_samples,
+                                                    nb_validation_samples,
+                                                    batch_size, epochs, "CNN1")
+	\end{minted}
+\end{listing} \ \\
+ 
 \section{Auswertung der Trainingsergebnisse}
 
 \section{Vorhersagen für unbekannte Bilder}

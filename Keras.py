@@ -123,23 +123,34 @@ def cnn_model_3():
         input_shape = (img_width, img_height, 3)
 
     model = Sequential()
-    model.add(Conv2D(32, kernel_size=(3, 3), padding='same', input_shape=input_shape))
+
+    model.add(Conv2D(16, kernel_size=(3, 3), padding='same', input_shape=input_shape))
+    model.add(Activation('relu'))
+    model.add(Conv2D(16, kernel_size=(3, 3)))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.125))
+
+    model.add(Conv2D(32, kernel_size=(3, 3), padding='same'))
     model.add(Activation('relu'))
     model.add(Conv2D(32, kernel_size=(3, 3)))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.125))
 
     model.add(Conv2D(64, kernel_size=(3, 3), padding='same'))
     model.add(Activation('relu'))
     model.add(Conv2D(64, kernel_size=(3, 3)))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.125))
 
     model.add(Flatten())
     model.add(Dense(1024))
     model.add(Activation('relu'))
     model.add(Dense(512))
     model.add(Activation('relu'))
+    model.add(Dropout(0.4))
     model.add(Dense(num_classes))
     model.add(Activation('softmax'))
 
@@ -261,7 +272,7 @@ def train_test_evaluate(_model, _train_generator, _val_generator, _nb_train_samp
                                  steps_per_epoch=_nb_train_samples // _batch_size,
                                  epochs=_epochs,
                                  validation_data=_val_generator,
-                                 validation_steps=_nb_train_samples // _batch_size)
+                                 validation_steps=_nb_val_samples // _batch_size)
 
     _score = _model.evaluate_generator(_val_generator, _nb_val_samples)
     print("Score for model: Test loss: ", _score[0])
