@@ -16,7 +16,7 @@ extract_path = "./data/"
 train_data_dir = './data/Training'
 validation_data_dir = './data/Testing'
 # dimensions of our images.
-img_width, img_height = 32, 32
+img_width, img_height = 64, 64
 num_classes = 62
 
 
@@ -124,6 +124,13 @@ def cnn_model_3():
 
     model = Sequential()
 
+    model.add(Conv2D(8, kernel_size=(3, 3), padding='same', input_shape=input_shape))
+    model.add(Activation('relu'))
+    model.add(Conv2D(8, kernel_size=(3, 3)))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.125))
+
     model.add(Conv2D(16, kernel_size=(3, 3), padding='same', input_shape=input_shape))
     model.add(Activation('relu'))
     model.add(Conv2D(16, kernel_size=(3, 3)))
@@ -146,6 +153,9 @@ def cnn_model_3():
     model.add(Dropout(0.125))
 
     model.add(Flatten())
+    model.add(Dense(2048))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.4))
     model.add(Dense(1024))
     model.add(Activation('relu'))
     model.add(Dense(512))
@@ -297,15 +307,15 @@ if __name__ == '__main__':
     print("###################################  CNN1  #########################################")
     print("####################################################################################")
     model_cnn_1 = cnn_model_1()
-    m1_model, m1_hist, m1_score = train_test_evaluate(model_cnn_1, train_gen, val_gen, nb_train_samples,
-                                                      nb_validation_samples, batch_size, epochs, "CNN1")
+    #m1_model, m1_hist, m1_score = train_test_evaluate(model_cnn_1, train_gen, val_gen, nb_train_samples,
+    #                                                  nb_validation_samples, batch_size, epochs, "CNN1")
 
     print("####################################################################################")
     print("###################################  CNN2  #########################################")
     print("####################################################################################")
     model_cnn_2 = cnn_model_2()
-    m2_model, m2_hist, m2_score = train_test_evaluate(model_cnn_2, train_gen, val_gen, nb_train_samples,
-                                                      nb_validation_samples, batch_size, epochs, "CNN2")
+    #m2_model, m2_hist, m2_score = train_test_evaluate(model_cnn_2, train_gen, val_gen, nb_train_samples,
+    #                                                  nb_validation_samples, batch_size, epochs, "CNN2")
 
     print("####################################################################################")
     print("###################################  CNN3  #########################################")
@@ -318,5 +328,5 @@ if __name__ == '__main__':
     print("###################################  LeNet  ########################################")
     print("####################################################################################")
     model_lenet = cnn_model_lenet()
-    m4_model, m4_hist, m4_score = train_test_evaluate(model_lenet, train_gen, val_gen, nb_train_samples,
-                                                      nb_validation_samples, batch_size, epochs, "LeNet")
+    #m4_model, m4_hist, m4_score = train_test_evaluate(model_lenet, train_gen, val_gen, nb_train_samples,
+    #                                                  nb_validation_samples, batch_size, epochs, "LeNet")
