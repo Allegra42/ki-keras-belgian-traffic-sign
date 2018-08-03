@@ -27,7 +27,6 @@ Für die Entwicklung und das Training wurde eine Intel(R) Core(TM) i7-7820HQ CPU
 Der belgische Verkehrszeichen Datensatz unterscheidet zwischen 62 verschiedenen, aber teils sehr ähnlichen Kategorien. In den Abbildungen \ref{pic:vergleich-zeichen1} und \ref{pic:vergleich-zeichen2} ist dies anhand von Originalbildern aus den Trainingsdaten dargestellt. Während Bild (a) aus der Abbildung \ref{pic:vergleich-zeichen1} zwar Ähnlichkeiten mit den anderen beiden aufweist, ist es durch die Form klar abzugrenzen. Zwischen den Bildern (b) und (c) ist dies deutlich schwieriger. Bei Bild (b) handelt es sich um ein Gefahrenzeichen, während (c) ein rein informativen Charakter hat \cite{road-sign-defs}. Der Unterschied in Farbe und Form ist, gerade bei der Nutzung von Bildern in Graustufen nicht sehr groß. In der Anwendung einer künstlichen Intelligenz im Straßenverkehr ist die korrekte Unterscheidung zwischen Information und Gefahrenzeichen durchaus relevant. 
 Noch deutlicher wird die Schwierigkeit in der Klassifikation in den unter Abbildung \ref{pic:vergleich-zeichen2} dargestellten Originalbildern. Es handelt sich tatsächlich um das selbe Zeichen, dass durch seine Ausrichtung eine gewisse Bedeutung erlangt. Der Datensatz unterscheidet zwischen \textit{mandatory direction (ahead)} (a) und \textit{mandatory direction (others)} (b und c). 
 Damit ist die Klassifikation in diesem Fall von der Ausrichtung der Eingangsbilder abhängig. Schon bei einer leichten Verzerrung ist es denkbar, dass ein Modell zur Klassifikation die falsche Klasse auswählt. Dies wäre in der realen Welt aber auch bei einem menschlichen Fahrer leicht möglich, zeigt aber gut eine Schwierigkeit die aus dem Datensatz selbst resultiert.
-%TODO ähnliche Kategorien Bilder
 
 \begin{figure} [ht]
 	\centering
@@ -60,7 +59,12 @@ Eine andere solche Schwierigkeit ist die Größe und Aufteilung des Datensatzes.
 	\label{pic:picsproclass}
 \end{figure} \ \\
 %
-In den Abbildungen \ref{pic:vergleich-zeichen1} und \ref{pic:vergleich-zeichen2} werden bereits Beispielbilder aus dem Trainingsdatensatz dargestellt. Die Bilder liegen als Farbbilder (RGB) im PPM (Portable Pixmap) Format, aber in unterschiedlichen Bildgrößen vor. Die Bilder sind für Trainings- und Testdatensatz jeweils in Unterordnern, welche die Klassen repräsentieren, angeordnet. Zusätzlich befindet sich in jedem Unterordner eine CSV-Datei, die zusätzliche Informationen, wie die Breite, die Höhe, die Koordinaten der Region of Interest (ROI) und die Klassennummer, zu jedem Bildnamen enthält. Die Informationen aus dieser Datei wurden in dieser Arbeit nicht verwendet.
+In den Abbildungen \ref{pic:vergleich-zeichen1} und \ref{pic:vergleich-zeichen2} werden bereits Beispielbilder aus dem Trainingsdatensatz dargestellt. Die Bilder liegen als Farbbilder (RGB) im PPM (Portable Pixmap) Format, aber in unterschiedlichen Bildgrößen vor. Die Bilder sind für Trainings- und Testdatensatz jeweils in Unterordnern, welche die Klassen repräsentieren, angeordnet. Zusätzlich befindet sich in jedem Unterordner eine CSV-Datei, die zusätzliche Informationen, wie die Breite, die Höhe, die Koordinaten der Region of Interest (ROI) und die Klassennummer, zu jedem Bildnamen enthält. Die Informationen aus dieser Datei wurden in dieser Arbeit nicht verwendet. 
+
+\subsection{Probleme im Datensatz}
+Im Datensatz \textit{Training} sind in der Kategorie 6 drei Bilder fälschlicherweise eingeordnet, die eigentlich der Klasse 5 angehören. Natürlich hat dies Auswirkungen auf das Training, da das Modell somit nicht mit korrekten Informationen trainiert werden kann. Daher werden die Bilder in die richtige Kategorie verschoben. In der oben gezeigten Grafik \ref{pic:picsproclass} ist dies nicht berücksichtigt.\\
+\\
+Der Testdatensatz enthält nicht für jede Kategorie Bildbeispiele. Das selbst hat keine weiteren Auswirkungen, sollte aber in der Auswertung der Ergebnisse berücksichtigt werden.
 
 \section{Laden des Datensatzes}
 Bevor die Datensätze für Training und Validierung zur weiteren Verwendung eingelesen werden können, müssen diese erst auf lokal gespeichert werden. Da dies in Python sehr einfach erledigt werden kann, soll an dieser Stelle nicht weiter darauf eingegangen werden. Im Quellcode \texttt{Keras.py} sind die entsprechenden Funktionen zum Herunterladen und entpacken der Datensätze in den Zeilen 23 bis 53 definiert. \\
@@ -169,8 +173,8 @@ Bevor ein Modell trainiert werden kann, ist es notwendig es zu \textit{compilier
 	\item den Optimierer (optimizer), Keras bietet verschiedene Optimierungsfunktionen zur Verwendung an. Es handelt sich dabei um mathematische Funktionen zur Fehlerminimierung. 
 	\item die Verlustfunktion/Zielfunktion (loss function), beschreibt das Ziel für welches ein neuronales Netz optimiert werden soll. Nicht jede Funktion eignet sich für jede Aufgabe. Für eine Klassifizierungsaufgabe mit mehr als zwei Klassen wird \texttt{categorical\_crossentropy} sehr häufig eingesetzt.
 	\item eine Liste von Metriken (metrics), die während Training und Testing ausgewertet werden sollen. Üblicherweise wird hier \texttt{metrics=['accuracy']} verwendet.
-\end{itemize}
-
+\end{itemize} \ \\
+Weiterführende Informationen über die eingesetzten Methoden können der Keras API \cite{keras} entnommen werden.
 
 \subsection{Die Modelle}
 Für diese Arbeit wurden drei Modelle als \textit{Convolutional Neural Network} entworfen. Modell zwei und drei wurden jeweils ausgehend von dem vorherigen weiter entwickelt. Bei dem ersten Modell handelt es sich um eine möglichst einfache Basisimplementierung. Um einen Vergleich zu den selbst entwickelten Modellen zu erhalten, wurde zusätzlich eine Implementierung von \textit{LeNet} \cite{kaggle-lenet} nach Keras 2 portiert und an die Aufgabenstellung angepasst.
@@ -214,6 +218,8 @@ return model
 \end{figure}
 
 \subsubsection{CNN2}
+Das zweite CNN ist schon deutlich komplexer, als der erste Versuch. Das Eingabebild durchläuft zweimal eine Sequenz aus zweimaliger Faltung, MaxPooling und einem relativ hohen Dropout, bei dem ein Viertel der Neuronen des Pooling Layers ausgeschaltet werden. Beide Sequenzen unterscheiden sich nur durch den Parameter \texttt{filters}, der einmal auf 32 und einmal auf 64 gesetzt wurde (Listing \ref{lst:cnn2}, Zeile 3/6 und 11/13). Als Aktivierungsfunktion wurde in beide Fällen \texttt{relu} verwendet (Zeile 5, 7, 12, 14).
+Die Architektur des  Netzes wird wieder durch Flattening und zwei Fully Connected Layer abgeschlossen. Im Unterschied zum vorherigen Modell enthält der der erste Fully Connected Layer deutlich mehr Neuronen und es gibt zwischen diesem und der Ausgabeschicht einen Dropout von 50\%. Wie auch zuvor wurde für den ersten Fully Connected Layer \texttt{relu} als Aktivierungsfunktion verwendet, während in der Ausgabeschicht \texttt{softmax} genutzt wird (Zeile 18 - 23). Wieder im Kontrast zur ersten Implementierung wird in dieser \texttt{rmsprop} als Optimizer genutzt (Zeile 34). Abbildung \ref{pic:summary-cnn2} stellt die Architektur des Netzes noch einmal dar.
 
 \begin{listing} [H]
 	\caption{Implementierung CNN2}
@@ -260,8 +266,9 @@ def cnn_model_2():
 \end{figure}
 
 \subsubsection{CNN3}
+Die dritte Implementierung unterscheidet sich nur durch die Anzahl der Layer und Änderungen weniger Parameter von der vorherigen Implementierung. Eine weitere Sequenz von zwei Convolution, einem MaxPooling und einem Dropout Layer wurde neben einer weiteren Fully Connected Schicht eingefügt (siehe Listing \ref{lst:cnn3} und Abbildung \ref{pic:summary-cnn3}). Die Idee hinter diesem Modell war es vor allem zu untersuchen, wie sich die Qualität des Netzes durch weitere Layer und Änderungen der Parameter verhält. Leider ist es schwierig dies im Rahmen einer schriftlichen Ausarbeitung zu dokumentieren. Auch die Git-History enthält nicht alle Versuchsschritte, gibt aber einen kleinen Einblick in diese. 
 
-\begin{listing} [H]
+\begin{listing} [H] 
 	\caption{Implementierung CNN3}
 	\label{lst:cnn3}
 	\begin{minted}[frame=lines, framesep=2mm, fontsize=\footnotesize, linenos]{python}
@@ -315,6 +322,16 @@ def cnn_model_3():
 \end{figure}
 
 \subsubsection{LeNet}
+Um eine Referenzwert für die Güte der Modelle abseits der in TensorFlow vorgegebenen Basisimplementierung zu erhalten wurde als viertes Modell eine Implementierung von \textit{LeNet}, genauer \textit{LeNet-5} auf der Website \url{https://www.kaggle.com/tupini07/predicting-mnist-labels-with-a-cnn-in-keras/notebook} \cite{kaggle-lenet} gefunden. Diese Architektur wurde unter anderem ausgewählt, weil \textsc{Yann LeCun} als Begründer von Convolutional Neural Networks gilt, aber auch weil das Problem, für das sie in der Referenzimplementierung eingesetzt wurde, ähnlich zur Aufgabenstellung dieser Arbeit ist. Da das Modell dort allerdings für Keras 1 entwickelt wurde musste zusätzlich zu der Anpassung an den hier verwendeten Datensatz eine Portierung zu Keras 2 stattfinden. \\
+\\
+Neben der Anpassung an die Keras 2 API wurden im Vergleich zum Orginalcode aus \cite{kaggle-lenet} folgende Punkte angepasst:
+\begin{itemize}
+	\item Der \texttt{input\_shape} wurde von (28, 28, 1) (28 x 28 Pixel, 1 Farbkanal (Grayscale)) zu (32, 32, 3) (3 Farbkanäle (RGB)) geändert.
+	\item Der letzte Fully Connected Layer, die Ausgangsschicht, wurde auf die Anzahl der unterschiedlichen Verkehrszeichen (Klassen) gesetzt.
+\end{itemize} \ \\
+Die letzte Anpassung ist zwingend notwendig, um das Netz für die Klassifikation der belgischen Verkehrszeichen zu adaptieren. Die Formatierung der Eingangsdaten wurde schon beim Laden der Daten anders festgelegt und sollte, um vergleichbare Resultate zwischen den einzelnen Implementierungen zu erreichen, konstant gehalten werden. \\
+\\
+Auch \textit{LeNet} ähnelt den vorhergegangenen Architekturen bis auf die Wahl der Parameter und der Anzahl der Layer. Details können Listing \ref{lst:lenet} und Abbildung \ref{pic:summary-lenet} entnommen werden.
 
 \begin{listing} [H]
 	\caption{Implementierung LeNet}
@@ -420,8 +437,40 @@ if __name__ == '__main__':
                                                     batch_size, epochs, "CNN1")
 	\end{minted}
 \end{listing} \ \\
- 
+
 \section{Auswertung der Trainingsergebnisse}
+Ein Blick auf die Ergebnisse aus Training und Validierung in Tabelle \ref{tab:ergebnisse} zeigt eine Schwierigkeit im maschinellen Lernen: Die Ergebnisse liegen teils sehr dicht beisammen. In den ausgeführten Trainingsläufen konnte auch kein klar favorisiertes Modell ausgemacht werden. Meist hatte zwar das Modell \textit{CNN2} um wenige Prozent das beste Ergebnis, aber auch \textit{CNN3} führte in wenigen Tests mit ein bis zwei  VorsProzentprung. \textit{LeNet} war in fast allen Durchläufen schlechter als \textit{CNN2} und \textit{CNN3}, meist aber doch besser als \textit{CNN1}.\\
+\\
+Bevor die Ergebnisse weiter diskutiert werden, soll noch einmal kurz darauf eingegangen werden, welche Werte in der Tabelle \ref{tab:ergebnisse} und \ref{pic:figs} abgebildet werden.
+%TODO
+werte: training epoche 50 und validierung
+bedeutung
+
+\begin{table} [ht]
+	\begin{tabular}{|c|cc|cc||cc|cc|}
+		\hline 
+		 & \multicolumn{4}{|c||}{Orginal-Datensatz} & \multicolumn{4}{|c|}{Korrigierter Datensatz} \\ 
+		Netz & \multicolumn{2}{|c|}{Training} & \multicolumn{2}{|c||}{Testing} & \multicolumn{2}{|c|}{Training} & \multicolumn{2}{|c|}{Testing} \\
+		  & Accuracy & Loss & Accuracy & Loss & Accuracy & Loss & Accuracy & Loss \\ \hline 
+		  %
+		  CNN1 & 0.966 & 0.111 & 0.913 & 0.421 & 0.968 & 0.105 & 0.903 & 0.456 \\
+		  CNN2 & 0.935 & 0.230 & 0.965 & 0.137 & 0.927 & 0.244 & 0.957 & 0.167 \\
+		  CNN3 & 0.918 & 0.283 & 0.948 & 0.214 & 0.925 & 0.244 & 0.930 & 0.251 \\
+		  LeNet& 0.899 & 0.300 & 0.943 & 0.224 & 0.903 & 0.293 & 0.927 & 0.252 \\ \hline
+		 
+	\end{tabular}
+	\caption{Übersicht der Trainings- und Testergebnisse} \label{tab:ergebnisse}
+\end{table}
+
+\begin{figure} [!ht]
+	\centering
+	\subfloat[CNN1 \label{pic:fig-cnn1}]{\includegraphics[scale=0.5]{CNN1}}
+	\subfloat[CNN2 \label{pic:fig-cnn2}]{\includegraphics[scale=0.5]{CNN2}}\\
+	\subfloat[CNN3 \label{pic:fig-cnn3}]{\includegraphics[scale=0.5]{CNN3}}
+	\subfloat[LeNet \label{pic:fig-lenet}]{\includegraphics[scale=0.5]{LeNet}}
+	\caption{Grafische Auswertung der Ergebnisse aus dem Training} \label{pic:figs}
+\end{figure}
+
 
 \section{Vorhersagen für unbekannte Bilder}
 
