@@ -439,28 +439,34 @@ if __name__ == '__main__':
 \end{listing} \ \\
 
 \section{Auswertung der Trainingsergebnisse}
-Ein Blick auf die Ergebnisse aus Training und Validierung in Tabelle \ref{tab:ergebnisse} zeigt eine Schwierigkeit im maschinellen Lernen: Die Ergebnisse liegen teils sehr dicht beisammen. In den ausgeführten Trainingsläufen konnte auch kein klar favorisiertes Modell ausgemacht werden. Meist hatte zwar das Modell \textit{CNN2} um wenige Prozent das beste Ergebnis, aber auch \textit{CNN3} führte in wenigen Tests mit ein bis zwei  VorsProzentprung. \textit{LeNet} war in fast allen Durchläufen schlechter als \textit{CNN2} und \textit{CNN3}, meist aber doch besser als \textit{CNN1}.\\
-\\
-Bevor die Ergebnisse weiter diskutiert werden, soll noch einmal kurz darauf eingegangen werden, welche Werte in der Tabelle \ref{tab:ergebnisse} und \ref{pic:figs} abgebildet werden.
-%TODO
-werte: training epoche 50 und validierung
-bedeutung
+Ein Blick auf die Ergebnisse aus Training und Validierung in Tabelle \ref{tab:ergebnisse} zeigt eine Schwierigkeit im maschinellen Lernen: Die Ergebnisse liegen teils sehr dicht beisammen. In den ausgeführten Trainingsläufen konnte auch kein klar favorisiertes Modell ausgemacht werden. Meist hatte zwar das Modell \textit{CNN2} um wenige Prozent das beste Ergebnis, aber auch \textit{CNN3} führte in wenigen Tests mit ein bis zwei Prozent Vorsprung. \textit{LeNet} war in fast allen Durchläufen schlechter als \textit{CNN2} und \textit{CNN3}, im Testing jedoch besser als \textit{CNN1}, während dieses im Training klar besser war.
 
 \begin{table} [ht]
 	\begin{tabular}{|c|cc|cc||cc|cc|}
 		\hline 
-		 & \multicolumn{4}{|c||}{Orginal-Datensatz} & \multicolumn{4}{|c|}{Korrigierter Datensatz} \\ 
+		& \multicolumn{4}{|c||}{Orginal-Datensatz} & \multicolumn{4}{|c|}{Korrigierter Datensatz} \\ 
 		Netz & \multicolumn{2}{|c|}{Training} & \multicolumn{2}{|c||}{Testing} & \multicolumn{2}{|c|}{Training} & \multicolumn{2}{|c|}{Testing} \\
-		  & Accuracy & Loss & Accuracy & Loss & Accuracy & Loss & Accuracy & Loss \\ \hline 
-		  %
-		  CNN1 & 0.966 & 0.111 & 0.913 & 0.421 & 0.968 & 0.105 & 0.903 & 0.456 \\
-		  CNN2 & 0.935 & 0.230 & 0.965 & 0.137 & 0.927 & 0.244 & 0.957 & 0.167 \\
-		  CNN3 & 0.918 & 0.283 & 0.948 & 0.214 & 0.925 & 0.244 & 0.930 & 0.251 \\
-		  LeNet& 0.899 & 0.300 & 0.943 & 0.224 & 0.903 & 0.293 & 0.927 & 0.252 \\ \hline
-		 
+		& Accuracy & Loss & Accuracy & Loss & Accuracy & Loss & Accuracy & Loss \\ \hline 
+		%
+		CNN1 & 0.966 & 0.111 & 0.913 & 0.421 & 0.968 & 0.105 & 0.903 & 0.456 \\
+		CNN2 & 0.935 & 0.230 & 0.965 & 0.137 & 0.927 & 0.244 & 0.957 & 0.167 \\
+		CNN3 & 0.918 & 0.283 & 0.948 & 0.214 & 0.925 & 0.244 & 0.930 & 0.251 \\
+		LeNet& 0.899 & 0.300 & 0.943 & 0.224 & 0.903 & 0.293 & 0.927 & 0.252 \\ \hline
+		
 	\end{tabular}
 	\caption{Übersicht der Trainings- und Testergebnisse} \label{tab:ergebnisse}
-\end{table}
+\end{table} \ \\
+%
+Bevor die Ergebnisse weiter diskutiert werden, soll noch einmal kurz darauf eingegangen werden, welche Werte in der Tabelle \ref{tab:ergebnisse} und \ref{pic:figs} abgebildet werden.
+Während für das Testing durch die Methode \texttt{evaluate\_generator} ein klarer Wert für Accuracy und Loss ausgegeben wird, gibt es im Training für jedes Sample einen neuen Wert, der durch ein History-Objekt ausgelesen werden kann (vgl. Listing \ref{lst:training}, Zeile 11 und 5 aus Abschnitt 7). Damit gibt es allerdings auch keinen eindeutigen Wert für die Qualität des Modells im Training. Zwar könnte z.B. die Methode des Testings nochmals mit den Trainingsdaten angewandt werden, aber da das Modell diese Daten bereits kennt entspricht das Ergebnis nicht notwendigerweise der Qualität des Netzes. Daher ist in der Tabelle \ref{tab:ergebnisse} für Trainings-Accuracy und -Loss jeweils der Wert aus der letzten Iteration der letzten Epoche des Trainings aufgeführt. Diese Werte sollen nur dem Vergleich mit denen aus der Validierung dienen. Alle Werte können in den beiliegenden Trainingslogs nachvollzogen werden. Auch die grafische Darstellung in Abbildung \ref{pic:figs} soll dabei helfen die Qualität der Modelle zu beurteilen.\\
+\\
+Wie schon der erste Blick auf die Resultate des Trainings gezeigt hat, sind die Ergebnisse schwierig zu interpretieren. Alle Netze liefern zufriedenstellende Resultate, die dennoch deutlich anders ausfallen, als erwartet wurde. Eine der Annahmen war, dass die Accuracy im Training besser als im Testing sein würde. Dies ist nur einmal mit \textit{CNN1} und dem originalen, nicht korrigierten Datensatz der Fall. Eine mögliche Erklärung könnte darauf basieren, dass im Testing-Datensatz nicht für alle Klassen Bilder vorhanden sind. Werden Bildklassen, die für das Netz im Training schwierig einzuordnen waren, in der Validierung des Netzes nicht abgefragt, erscheint es valide, dass die Accuracy des Modells steigt.
+Dies führt direkt zur nächsten Annahme. Es wurde angenommen, dass durch die Korrektur der falsch eingeordneten Trainingsbilder die Trainings- und Testergebnisse verbessert würden. Die Veränderung in den Trainingsergebnissen ist allerdings minimal und im Rahmen der Schwankungen, die auch zwischen mehreren Trainingsläufen auf einem gleichbleibenden Datensatz beobachtet wurden. Dagegen haben sich die Ergebnisse für das \textit{Testing} mit dem korrigierten Datensatz minimal, aber über den üblichen Schwankungen, verschlechtert. 
+Als ein weiteres Resultat aus den Ergebnissen lässt sich anführen, dass ein komplexeres Modell mit mehr Schichten nicht zwingend eine bessere Leistung erbringt, als ein einfaches. Auch ein bekanntes Netz muss nicht zwingend die besten Ergebnisse liefern.\\
+\\
+In einem Blick auf die Grafiken aus Abbildung \ref{pic:figs} zeigen deutlichere Unterschiede zwischen den Netzen als die bloßen Zahlen. Gerade ein Blick auf den Verlauf des Trainings- und Validierungs-Losses ist interessant und korreliert mit der Güte der Netze. Die Kurve von \textit{CNN1} weist die wenigsten Schwankungen auf, auch die Accuracy ist am Höchsten. \\
+\\
+Wie sich die Netze für vollständig unbekannte Bilder unterscheiden, soll im nächsten Abschnitt untersucht werden.
 
 \begin{figure} [!ht]
 	\centering
@@ -470,9 +476,53 @@ bedeutung
 	\subfloat[LeNet \label{pic:fig-lenet}]{\includegraphics[scale=0.5]{LeNet}}
 	\caption{Grafische Auswertung der Ergebnisse aus dem Training} \label{pic:figs}
 \end{figure}
-
+\newpage
 
 \section{Vorhersagen für unbekannte Bilder}
+Um die Modelle für unbekannte Bilder nach dem Training zu nutzen, wurde eine eigenständige Anwendung in der Datei \texttt{ClassifyImages.py} erstellt. Ein Ausschnitt ist in Listing \ref{lst:new-pics} dargestellt. Über die Kommandozeilen-Argumente \texttt{--model} und \texttt{--image} kann jeweils der Pfad zu einem bereits trainierten Modell im Format \texttt{.h5} und der zu dem zu klassifizierenden Bild angegeben werden. Bild und Modell werden geladen (\ref{lst:new-pics}, Zeile 3 und 4) und eine Vorhersage für diese erstellt (Zeile 6). Neben der Ausgabe auf der Konsole wird das Eingangsbild, mit den Ergebnissen der Vorhersage angereichert, in eine Datei gespeichert.
 
+\begin{listing} [ht]
+	\caption{Nutzung der erstellten Modelle für unbekannte Bilder}
+	\label{lst:new-pics}
+	\begin{minted}[frame=lines, framesep=2mm, fontsize=\footnotesize, linenos]{python}
+if __name__ == '__main__':
+  args = parse_args()
+  image, org = load_image(args)
+  model = load_model(args["model"])
+
+  pred = model.predict_classes(image)
+
+  print("Class: " + str(pred[0]))
+  print("Class label: " + str(labels[pred[0]]))
+	\end{minted}
+\end{listing} \ \\
+%
+Für den erneuten Test sollen alle vier Modelle im Bezug auf sechs Bilder von Verkehrszeichen, die nicht dem Trainings- oder Testdatensatz angehören getestet werden. Abbildung \ref{pic:new-pics} zeigt diese inklusive derer Einordnung in die Klassen des Datensatzes. Die Bilder liegen in verschiedenen Größen und Auflösungen vor. 
+
+\begin{figure} [!ht]
+	\centering
+	\subfloat[Klasse 2 \label{pic:2}]{\includegraphics[scale=0.25]{2}}
+	\subfloat[Klasse 27 \label{pic:27}]{\includegraphics[scale=0.53]{27}}
+	\subfloat[Klasse 28 \label{pic:28}]{\includegraphics[scale=1.0]{28}}\\
+	\subfloat[Klasse 30 \label{pic:30}]{\includegraphics[scale=0.99]{30}}
+	\subfloat[Klasse 41 \label{pic:41}]{\includegraphics[scale=0.4]{41}}
+	\subfloat[Klasse 56 \label{pic:56}]{\includegraphics[scale=0.5]{56}}
+	\caption{Zusätzliche Bilder} \label{pic:new-pics}
+\end{figure} \ \\
+%
+%TODO Auswertung: bildausschnitt extrem wichtig -> vgl trainingsbilder
+\begin{table}[ht]
+	\begin{tabular}{|l|cccc|c|}
+		\hline
+		Bild & CNN1 & CNN2 & CNN3 & LeNet\\\hline
+		Klasse 2  (slippery road) & 2 & 2 & 2 & 2\\
+		Klasse 27 (maximum height allowed) & 27 & 27 & 24 & 27\\
+		Klasse 28 (no traffic allowed in both directions) & 28 & 32 & 28 & 28\\
+		Klasse 30 (no right turn) & 30 & 30 & 30 & 30\\
+		Klasse 41 (no parking) & 41 & 41 & 41 & 41\\
+		Klasse 56 (pedestrian crosswalk) & 56 & 56 & 56 & 56\\
+		\hline
+	\end{tabular}
+\end{table}
 \section{Zusammenfassung}
 
