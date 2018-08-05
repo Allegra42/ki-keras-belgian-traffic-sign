@@ -15,3 +15,6 @@ Mit der Lehrveranstaltung \textit{Künstliche Intelligenz} der Hochschule Pforzh
 \end{figure}
 
 %TODO verweis auf angehängte Dateien/Github
+\subsection{Quellcodes}
+Alle Dateien und Quellcodes, die notwendig sind, um diese Arbeit nachzuvollziehen sind in dem GitHub Repository \url{https://github.com/Allegra42/ki-keras-belgian-traffic-sign} abgelegt. Die benötigten Abhängigkeiten können z.B. über \texttt{virtualenv} und den Befehl \texttt{pip install -r requirements.txt} installiert werden. Das Training der Modelle kann über den Befehl \texttt{python3\ Keras.py} gestartet werden. Dabei wird angenommen, dass die Trainings- und Testdaten bereits heruntergeladen und unter dem Pfad \texttt{/data/} entpackt sind. Ist dies nicht der Fall kann im Quellcode die Zeile 222, \texttt{download\_data()} in der Methode \texttt{setup\_data()}, einkommentiert werden. Um ein Modell auf beliebige, entsprechend der Bildausschnitte der Trainingsbilder zugeschnittene, Bilder anzuwenden, dient der Befehl \texttt{python3 ClassifyImages.py -m <Pfad/zum/Modell> -i <Pfad/zum/Bild>}. Alle Anwendungen, die im Rahmen dieser Arbeit erstellt wurden, sind nur auf Linux entwickelt und getestet worden. Bei einem Systemwechsel müssen die Pfadangaben in den Quellcodes und den Aufrufen der Anwendungen entsprechend angepasst werden. 
+\newpage

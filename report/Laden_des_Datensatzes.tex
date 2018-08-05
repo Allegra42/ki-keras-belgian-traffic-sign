@@ -73,6 +73,7 @@ Ein Blick auf die Referenzimplementierung zu dieser Hausarbeit von Professor Vol
 \\
 Die im folgenden Listing \ref{lst:load-data} abgebildete Methode stammt aus dem Quellcode \texttt{Keras.py} und zeigt, wie Trainings- und Validierungsdatensatz jeweils für das Training der neuronalen Netze geladen werden.
 Ab Zeile 5 wird ein Objekt der Klasse \texttt{ImageDataGenerator} für die Generierung der Trainingsdaten angelegt. Bei diesen soll eine Erweiterung (Augmentation) der teils wenigen vorhandenen Bilder stattfinden, um eine breitere Datenbasis für das Training zu erreichen. Der erste Parameter, \texttt{rescale} gibt einen Skalierungsfaktor an, hat aber mit der Erweiterung der Datenbasis nichts zu tun. Diese wird über die folgenden Parameter \texttt{shear\_range}, \texttt{zoom\_range} und \texttt{horizontal\_flip} gesteuert. \\
+\\
 Für die Validierungsdaten wird auf eine Erweiterung der Daten verzichtet, um die Resultate der Modelle vergleichbar mit anderen Ansätzen zu halten (Zeile 13).\\
 \\
 Das Laden der Bilddaten aus den Verzeichnissen erfolgt dann äquivalent für beide Datensätze über die Methode \texttt{flow\_from\_directory}, die auf dem jeweiligen\\
@@ -416,7 +417,6 @@ Analog zur Trainingsmethode \texttt{fit\_generator} wird zur Validierung des Mod
 \\
 Abschließend werden weitere Informationen zum Modell geloggt. Mit der Methode \texttt{summary} aus Listing \ref{lst:training}, Zeile 15 wird eine Überblick über die Architektur des Modells und die einzelnen Layer sowie deren Parameter ausgegeben. Wie schon erwähnt werden die Trainings- und Validierungsergebnisse grafisch aufbereitet und wie auch das Modell selbst gespeichert (Zeile 17). Ein trainiertes Modell kann einfach gespeichert werden, sodass es ohne erneutes Training z.B. in einer Anwendung eingesetzt werden kann. \\
 \\
-Das folgende Listing \ref{lst:start-training} zeigt einen Ausschnitt aus der Main-Funktion des Programms, mit dem die Daten vorbereitet und das Training, exemplarisch für das erste Modell, gestartet wird. Die genutzten Parameter \texttt{epochs} und \texttt{batch\_size} sind dabei willkürlich, aber in sinnvollen Grenzen, gewählt.
 
 \begin{listing} [ht]
 	\caption{Starten des Trainings exemplarisch für das erste Modell}
@@ -437,6 +437,8 @@ if __name__ == '__main__':
                                                     batch_size, epochs, "CNN1")
 	\end{minted}
 \end{listing} \ \\
+\\
+Das Listing \ref{lst:start-training} zeigt einen Ausschnitt aus der Main-Funktion des Programms, mit dem die Daten vorbereitet und das Training, exemplarisch für das erste Modell, gestartet wird. Die genutzten Parameter \texttt{epochs} und \texttt{batch\_size} sind dabei willkürlich, aber in sinnvollen Grenzen, gewählt.
 
 \section{Auswertung der Trainingsergebnisse}
 Ein Blick auf die Ergebnisse aus Training und Validierung in Tabelle \ref{tab:ergebnisse} zeigt eine Schwierigkeit im maschinellen Lernen: Die Ergebnisse liegen teils sehr dicht beisammen. In den ausgeführten Trainingsläufen konnte auch kein klar favorisiertes Modell ausgemacht werden. Meist hatte zwar das Modell \textit{CNN2} um wenige Prozent das beste Ergebnis, aber auch \textit{CNN3} führte in wenigen Tests mit ein bis zwei Prozent Vorsprung. \textit{LeNet} war in fast allen Durchläufen schlechter als \textit{CNN2} und \textit{CNN3}, im Testing jedoch besser als \textit{CNN1}, während dieses im Training klar besser war.
@@ -497,18 +499,18 @@ if __name__ == '__main__':
 	\end{minted}
 \end{listing} \ \\
 %
-Für den erneuten Test sollen alle vier Modelle im Bezug auf sechs Bilder von Verkehrszeichen, die nicht dem Trainings- oder Testdatensatz angehören getestet werden. Abbildung \ref{pic:new-pics} zeigt diese inklusive derer Einordnung in die Klassen des Datensatzes. Die Bilder liegen in verschiedenen Größen und Auflösungen vor. 
+Für den erneuten Test sollen alle vier Modelle im Bezug auf sechs Bilder von Verkehrszeichen, die nicht dem Trainings- oder Testdatensatz angehören getestet werden. Abbildung \ref{pic:new-pics} zeigt diese inklusive derer Einordnung in die Klassen des Datensatzes.
 
 \begin{figure} [!ht]
 	\centering
-	\subfloat[Klasse 2 \label{pic:2}]{\includegraphics[scale=0.25]{2}}
-	\subfloat[Klasse 27 \label{pic:27}]{\includegraphics[scale=0.53]{27}}
-	\subfloat[Klasse 28 \label{pic:28}]{\includegraphics[scale=1.0]{28}}\\
-	\subfloat[Klasse 30 \label{pic:30}]{\includegraphics[scale=0.99]{30}}
-	\subfloat[Klasse 41 \label{pic:41}]{\includegraphics[scale=0.4]{41}}
-	\subfloat[Klasse 56 \label{pic:56}]{\includegraphics[scale=0.5]{56}}
+	\subfloat[Klasse 2 \label{pic:2}]{\includegraphics[width=0.2\linewidth]{2}}
+	\subfloat[Klasse 27 \label{pic:27}]{\includegraphics[width=0.2\linewidth]{27}}
+	\subfloat[Klasse 28 \label{pic:28}]{\includegraphics[width=0.2\linewidth]{28}}\\
+	\subfloat[Klasse 30 \label{pic:30}]{\includegraphics[width=0.2\linewidth]{30}}
+	\subfloat[Klasse 41 \label{pic:41}]{\includegraphics[width=0.2\linewidth]{41}}
+	\subfloat[Klasse 56 \label{pic:56}]{\includegraphics[width=0.2\linewidth]{56}}
 	\caption{Zusätzliche Bilder} \label{pic:new-pics}
-\end{figure} \ \\
+\end{figure} 
 %
 %TODO Auswertung: bildausschnitt extrem wichtig -> vgl trainingsbilder
 \begin{table}[ht]
@@ -523,6 +525,39 @@ Für den erneuten Test sollen alle vier Modelle im Bezug auf sechs Bilder von Ve
 		Klasse 56 (pedestrian crosswalk) & 56 & 56 & 56 & 56\\
 		\hline
 	\end{tabular}
-\end{table}
-\section{Zusammenfassung}
+	\caption{Ergebnisse für zusätzliche Bilder}
+	\label{tab:ergebnisse-add}
+\end{table} \ \\
+Die Bilder liegen in verschiedenen Größen und Auflösungen vor. 
+Für den Test mussten die Originalbilder zugeschnitten werden. Da die Trainingsbilder fast keine Umgebung zu den Verkehrszeichen zeigen, sind die Ergebnisse alle Modelle nur für ähnliche Ausschnitte zuverlässig. Die in Abbildung \ref{pic:new-pics} zeigt die Bilder schon entsprechend präpariert. 
+In der folgenden Tabelle \ref{tab:ergebnisse-add} sind die Vorhersagen der Modelle für diese Bilder abgedruckt. Nur bei Modell \textit{CNN2} und \textit{CNN3} kam es jeweils zu einem Fehler. Modell \textit{CNN3} hat das Bild \ref{pic:27} der Klasse 27 fälschlicherweise der Klasse 24 zugeordnet. Beide Klassen sind allerdings auch sehr ähnlich, wie Abbildung \ref{pic:27-24} zeigt.
+Modell \textit{CNN2} hat dagegen das Bild \ref{pic:28} der Klasse 28 der Klasse 32 zugeordnet. Dies kann durch die Verschmutzung im weisen Bereich des Testbildes erklärt wieder. Ein Vergleich zwischen den Klassen zeigt Abbildung \ref{pic:28-32}.
 
+\begin{figure} [!ht]
+	\centering
+	\subfloat[Klasse 27 \label{pic:27-2}]{\includegraphics[width=0.2\linewidth]{27}}
+	\subfloat[Klasse 24 \label{pic:24}]{\includegraphics[width=0.2\linewidth]{24}}
+	\caption{Vergleich der Klassen 27 und 24} \label{pic:27-24}
+\end{figure}
+
+\begin{figure} [!ht]
+	\centering
+	\subfloat[Klasse 28 \label{pic:28-2}]{\includegraphics[width=0.2\linewidth]{28}}
+	\subfloat[Klasse 32 \label{pic:32}]{\includegraphics[width=0.2\linewidth]{32}}
+	\caption{Vergleich der Klassen 28 und 32} \label{pic:28-32}
+\end{figure} \ \\
+%
+Für diesen Test soll die Accuracy für die einzelnen Modelle nicht berechnet werden, da der Stichprobenumfang viel zur gering ist, um eine sinnvolle Aussage zu treffen. Dennoch zeigt dieser wie die trainierten Netze in einer Anwendung eingesetzt werden können. Interessant ist besonders, dass die Fehler der Modelle durchaus nachvollziehbar für einen menschlichen Betrachter sind. 
+\newpage
+
+\section{Resümee}
+Durch die praktische Arbeit mit neuronalen Netzen wurden im Rahmen dieser Arbeit einige neue, unerwartete Erkenntnisse gewonnen, die durch eine rein theoretische Ausarbeitung oder eine Klausur schwer vermittelbar gewesen wären. Dabei sind vor allem folgende Punkte aufgefallen:
+
+\begin{itemize}
+	\item Auch die Label eines bekannten, oft verwendeten Datensatzes sind nicht immer korrekt.
+	\item Die Anzahl der Layer korreliert nicht mit der Güte eines neuronalen Netzes.
+	\item Die Güte eines Netzes kann in verschiedenen Trainingsläufen merklich schwanken.
+	\item Die Trainings-Accuracy kann niedriger als die Test-/Validierungs-Accuracy sein.
+	\item Die Bildausschnitte, mit denen trainiert wird, bestimmen die Ausschnitte auf denen ein Modell sinnvoll angewandt werden kann.
+\end{itemize} \ \\
+Wie auch aus der Arbeit herauszulesen ist, fiel auch die Bewertung der Modelle schwer, da sie in den Werten sehr nah aneinander liegen. Dass ausgerechnet die beiden Modelle mit der höchsten Accuracy in der Validierung im Test mit externen Bildausschnitten einen Fehler machten, erschwert dies zusätzlich. Es bleibt die Frage, ob die Ergebnisse durch einen größeren Datensatz für Training, Testing und Validierung klarer ausgefallen wären.
