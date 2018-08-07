@@ -50,7 +50,7 @@ Damit ist die Klassifikation in diesem Fall von der Ausrichtung der Eingangsbild
 	\label{pic:vergleich-zeichen2}
 \end{figure} \ \\
 %
-Eine andere solche Schwierigkeit ist die Größe und Aufteilung des Datensatzes. Auf der schon genannten Website kann jeweils ein Trainings- und ein Testdatensatz heruntergeladen werden. Ein klar abgegrenzter Datensatz zur Validierung ist nicht verfügbar. Durch die Größe von Trainings- und Testdatensatz mit 4570 bzw. 2520 Bildern aufgeteilt sehr gering ist, kann nicht ohne weiteres ein Validierungsdatensatz abgetrennt werden. Auch die Aufteilung der Bilder im größeren Trainingsdatensatz erschwert dies. Abbildung \ref{pic:picsproclass} stellt die Problematik dabei gut dar. Während für 16 Klassen mindestens 100 Beispielbilder, anhand derer das neuronale Netz trainiert werden kann, vorhanden sind, müssen für 5 Klassen unter 10 Beispielbilder genügen. Machine Learning Verfahren leben von einer möglichst großen Datenmenge für das Training, es ist daher anzunehmen, dass für die 5 Klassen mit weniger als 10 Beispielbilder schlechtere Vorhersage-Ergebnisse als für die 16 Klassen mit mehr als 100 Beispielbildern erzielt werden. Zudem ist es auch hierdurch äußerst schwierig und wenig zielführend ein weiteren, distinkten Datensatz zur Verifikation abzugrenzen. 
+Eine andere solche Schwierigkeit ist die Größe und Aufteilung des Datensatzes. Auf der schon genannten Website kann jeweils ein Trainings- und ein Testdatensatz heruntergeladen werden. Ein klar abgegrenzter Datensatz zur Validierung ist nicht verfügbar. Da die Größe von Trainings- und Testdatensatz mit 4570 bzw. 2520 Bildern sehr gering ist, kann nicht ohne weiteres ein Validierungsdatensatz abgetrennt werden. Auch die Aufteilung der Bilder im größeren Trainingsdatensatz erschwert dies. Abbildung \ref{pic:picsproclass} stellt die Problematik dabei gut dar. Während für 16 Klassen mindestens 100 Beispielbilder, anhand derer das neuronale Netz trainiert werden kann, vorhanden sind, müssen für 5 Klassen unter 10 Beispielbilder genügen. Machine Learning Verfahren leben von einer möglichst großen Datenmenge für das Training, es ist daher anzunehmen, dass für die 5 Klassen mit weniger als 10 Beispielbilder schlechtere Vorhersage-Ergebnisse als für die 16 Klassen mit mehr als 100 Beispielbildern erzielt werden. Zudem ist es auch hierdurch äußerst schwierig und wenig zielführend ein weiteren, distinkten Datensatz zur Verifikation abzugrenzen. 
 
 \begin{figure} [ht]
 	\centering
@@ -69,7 +69,7 @@ Der Testdatensatz enthält nicht für jede Kategorie Bildbeispiele. Das selbst h
 \section{Laden des Datensatzes}
 Bevor die Datensätze für Training und Validierung zur weiteren Verwendung eingelesen werden können, müssen diese erst auf lokal gespeichert werden. Da dies in Python sehr einfach erledigt werden kann, soll an dieser Stelle nicht weiter darauf eingegangen werden. Im Quellcode \texttt{Keras.py} sind die entsprechenden Funktionen zum Herunterladen und entpacken der Datensätze in den Zeilen 23 bis 53 definiert. \\
 \\
-Ein Blick auf die Referenzimplementierung zu dieser Hausarbeit von Professor Volz zeigt den Aufwand, der in TensorFlow notwendig ist, um die Bilddaten zu laden und für das Verwendung in einem neuronalen Netz vorzubereiten. Keras kann diesen Prozess deutlich vereinfachen. Neben gewöhnlichem Laden der Daten bietet Keras mit der Klasse \texttt{ImageDataGenerator} und deren Methode \texttt{flow\_from\_directory} eine sehr einfache aber unheimlich mächtige Möglichkeit Bilddaten direkt aus einer Verzeichnisstruktur wie für den hier verwendeten Datensatz vorhanden auszulesen und für die weitere Verwendung vorzubereiten. Dies umfasst nicht nur gewöhnliches Preprocessing der Bilddaten, wie die Änderung und Vereinheitlichung der Bildgröße oder Ändern des Farbmodus, auch eine Echtzeit-Erweiterung des Datensatzes durch z.B. Verzerrung oder Rotation ist möglich. An dieser Stelle könnte auch eine Aufspaltung der Trainingsdaten in Trainings- und Testdatensätze erfolgen, aber aus den bereits im Abschnitt \textsc{Der Datensatz} genannten Gründen ist dies hier nicht sinnvoll.\\
+Ein Blick auf die Referenzimplementierung zu dieser Hausarbeit von Professor Volz zeigt den Aufwand, der in TensorFlow notwendig ist, um die Bilddaten zu laden und für das Verwendung in einem neuronalen Netz vorzubereiten. Keras kann diesen Prozess deutlich vereinfachen. Neben gewöhnlichem Laden der Daten bietet Keras mit der Klasse \texttt{ImageDataGenerator} und deren Methode \texttt{flow\_from\_directory} eine sehr einfache, aber mächtige Möglichkeit Bilddaten direkt aus einer Verzeichnisstruktur wie für den hier verwendeten Datensatz vorhanden auszulesen und für die weitere Verwendung vorzubereiten. Dies umfasst nicht nur gewöhnliches Preprocessing der Bilddaten, wie die Änderung und Vereinheitlichung der Bildgröße oder Ändern des Farbmodus, auch eine Echtzeit-Erweiterung des Datensatzes durch z.B. Verzerrung oder Rotation ist möglich. An dieser Stelle könnte auch eine Aufspaltung der Trainingsdaten in Trainings- und Testdatensätze erfolgen, aber aus den bereits im Abschnitt \textsc{Der Datensatz} genannten Gründen ist dies hier nicht sinnvoll.\\
 \\
 Die im folgenden Listing \ref{lst:load-data} abgebildete Methode stammt aus dem Quellcode \texttt{Keras.py} und zeigt, wie Trainings- und Validierungsdatensatz jeweils für das Training der neuronalen Netze geladen werden.
 Ab Zeile 5 wird ein Objekt der Klasse \texttt{ImageDataGenerator} für die Generierung der Trainingsdaten angelegt. Bei diesen soll eine Erweiterung (Augmentation) der teils wenigen vorhandenen Bilder stattfinden, um eine breitere Datenbasis für das Training zu erreichen. Der erste Parameter, \texttt{rescale} gibt einen Skalierungsfaktor an, hat aber mit der Erweiterung der Datenbasis nichts zu tun. Diese wird über die folgenden Parameter \texttt{shear\_range}, \texttt{zoom\_range} und \texttt{horizontal\_flip} gesteuert. \\
@@ -78,7 +78,7 @@ Für die Validierungsdaten wird auf eine Erweiterung der Daten verzichtet, um di
 \\
 Das Laden der Bilddaten aus den Verzeichnissen erfolgt dann äquivalent für beide Datensätze über die Methode \texttt{flow\_from\_directory}, die auf dem jeweiligen\\
 \texttt{ImageDataGenerator} Objekt aufgerufen wird (ab Zeile 15 bzw. 22). Für beide wird zuerst der Pfad, von dem die Bilddateien geladen werden sollen angegeben, z.B. \\
-\texttt{/data/Training}. Mit dem nächsten Parameter, \texttt{target\_size} wird die Zielgröße der Bilder für, in diesem Fall, die Eingabe in ein neuronales Netz definiert. In dem beschriebenen Projekt wird eine Zielgröße von 32x32 Pixeln verwendet. Die \texttt{batch\_size} gibt an wie viele Bilddateien in einem Schritt verarbeitet werden sollen. Weiter könnte man über den Parameter \texttt{colormode} die Bilddaten zu Grauwertbildern konvertieren. Allerdings wurde die Entscheidung getroffen in diese Arbeit Farbbildern zu nutzen.
+\texttt{/data/Training}. Mit dem nächsten Parameter, \texttt{target\_size} wird die Zielgröße der Bilder für, in diesem Fall, die Eingabe in ein neuronales Netz definiert. In dem beschriebenen Projekt wird eine Zielgröße von 32x32 Pixeln verwendet. Die \texttt{batch\_size} gibt an wie viele Bilddateien in einem Schritt verarbeitet werden sollen. Weiter könnte man über den Parameter \texttt{colormode} die Bilddaten zu Grauwertbildern konvertieren. Allerdings wurde die Entscheidung getroffen in dieser Arbeit Farbbildern zu nutzen.
 
 \begin{listing} [ht]
 	\caption{Laden der Trainings- und Validierungsdatensätze}
@@ -120,10 +120,10 @@ Bei den Rückgabewerten (Zeile 29) handelt es sich um \texttt{DirectoryIterator}
 Details zu den hier verwendeten Keras Methoden können in der API unter \url{https://keras.io/preprocessing/image/} und \url{https://keras.io/preprocessing/image/#imagedatagenerator-methods} nachgelesen werden.
 
 \section{Entwurf der Modellarchitekturen}
-Für diese Arbeit wurden drei Modellarchitekturen, die auf einander aufbauen, entworfen. Um eine Orientierung für die Leistungsfähigkeit solcher Netze zu erhalten und die eigenen Modelle dagegen zu vergleichen wurde zusätzlich eine öffentlich verfügbare Implementierung von den bekannten neuronalen Netz \textit{LeNet} zu Keras 2 portiert und an die Eingabedaten angepasst. \\
+Für diese Arbeit wurden drei Modellarchitekturen, die auf einander aufbauen, entworfen. Um eine Orientierung für die Leistungsfähigkeit solcher Netze zu erhalten und die eigenen Modelle dagegen zu vergleichen wurde zusätzlich eine öffentlich verfügbare Implementierung des bekannten neuronalen Netz \textit{LeNet} zu Keras 2 portiert und an die Eingabedaten angepasst. \\
 \\
 Bei allen vier Modellarchitekturen handelt es sich um sogenannte \textit{Convolutional Neural Networks} (CNN). Dieser Architekturtyp eignet sich besonders für die Klassifikation von Bildern, kann aber auch für andere Eingabedaten, wie z.B. Audio-Daten, verwendet werden. Eine Convolution ist zu deutsch eine Faltung, also eine mathematische Operation, die ebenso in der Bildverarbeitung eingesetzt wird um beispielsweise Kanten im Bild zu hervorzuheben und zu erkennen.
-In den CNNs wird diese Technik häufig zusammen mit \textit{Pooling} genutzt, um so genannte \textit{Features}, also interessante Kanten, Formen oder dominierende Farben in Ausschnitten des Eingangsbildes zu finden. Über \textit{Fully Connected Layer}, also Schichten bei denen jeder Knoten einer Schicht mit jedem der folgenden Verknüpft ist, wird aus den Features, die durch Convolution und Pooling gewonnen wurden, entschieden wie das Eingabebild kategorisiert werden soll \cite{nn-zoo}.
+In den CNNs wird diese Technik häufig zusammen mit \textit{Pooling} genutzt, um so genannte \textit{Features}, also interessante Kanten, Formen oder dominierende Farben in Ausschnitten des Eingangsbildes zu finden. Über \textit{Fully Connected Layer}, also Schichten bei denen jeder Knoten einer Schicht mit jedem der folgenden verknüpft ist, wird aus den Features, die durch Convolution und Pooling gewonnen wurden, entschieden wie das Eingabebild kategorisiert werden soll \cite{nn-zoo}.
 Eine ausführlichere Beschreibung zu CNNs aber auch vielen anderen Modellarchitekturen ist unter \url{http://www.asimovinstitute.org/neural-network-zoo/} zu finden. Dort ist ebenfalls das Paper \cite{lecun-98} von Yann LeCun et al. verlinkt, auf dem die Modell-Implementierung \textit{LeNet}, die zum Vergleich mit den eigenen Modellen verwendet werden soll, beruht.
 
 \subsection{Layer}
@@ -142,7 +142,7 @@ Bevor die Implementierung der Netze im Detail betrachtet wird, sollen zuerst die
 		\item elu - Exponentiell lineare Einheit
 		\item softplus - Softplus Aktivierungsfunktion
 		\item softsign - Softsign Aktivierungsfunktion
-		\item relu - Rectified Linear Unit		oder die
+		\item relu - Rectified Linear Unit
 		\item sigmoid - Sigmoid Aktivierungsfunktion		
 	\end{itemize}
 	%
@@ -380,7 +380,7 @@ def cnn_model_lenet():
 \end{figure}
 
 \section{Training der Modelle}
-Dass für das Einlesen der Bilddaten der \texttt{ImageDataGenerator} verwendet wurde, macht sich auch beim Training der Modelle bezahlt.
+Das für das Einlesen der Bilddaten der \texttt{ImageDataGenerator} verwendet wurde, macht sich auch beim Training der Modelle bezahlt.
 Auf den Modellen kann die Methode \texttt{fit\_generator} (Listing \ref{lst:training}, Zeile 5) aufgerufen werden, die ein Batch-basiertes Training auf Basis der \texttt{DirectoryIterator} Objekte anstößt, die von der Methode \texttt{setup\_data} aus Listing \ref{lst:load-data} zurückgegeben wurden. Der Generator selbst läuft parallel zum Training, um die Erweiterung des Datensatzes in Echtzeit zu realisieren.
 Der \texttt{fit\_generator} nimmt dabei zum einen den \texttt{DirectoryIterator} der Trainingsbilder (\texttt{\_train\_generator}) als Argument, aber auch den der Validierierungsdaten (\texttt{\_val\_generator}). Dies bedeutet aber nicht, dass das Modell mit den Validierungsdaten trainiert wird, sondern, dass zum Abschluss jeder Epoche, also jedes Trainingsschritts, das bisherige Modell einmal an den Validierungsdaten getestet wird. Dabei handelt es sich um einen optionalen Schritt, der keine Auswirkung auf das Modell selbst hat.
 Bei den Argumenten \texttt{steps\_per\_epoch} und \texttt{validation\_steps} wurde der Wert entsprechend der Empfehlung der Keras API auf die Anzahl der Bilddateien des jeweiligen Datensatzes geteilt durch die Größe eines Batches gesetzt. Der Wert für die Anzahl der Epochen wird beim Aufruf des Trainings übergeben und hier willkürlich auf 50 gesetzt (siehe Listing \ref{lst:start-training}).
@@ -411,7 +411,7 @@ def train_test_evaluate(_model, _train_generator, _val_generator,
 	\end{minted}
 \end{listing} \ \\
 %
-Die Methode \texttt{fit\_generator} liefert als Rückgabewert ein \texttt{History} Objekt, dass die Metriken des Trainings und der Validierung für jede Epoche enthält. Dies wird genutzt, um die Resultate für jedes Modell grafisch darzustellen \ref{lst:training}, Zeile 16. Die Implementierung der Funktion kann im beiliegenden Quellcode nachvollzogen werden. \\
+Die Methode \texttt{fit\_generator} liefert als Rückgabewert ein \texttt{History} Objekt, dass die Metriken des Trainings und der Validierung für jede Epoche enthält. Dies wird genutzt, um die Resultate für jedes Modell grafisch darzustellen, wie in Listing \ref{lst:training}, Zeile 16 gezeigt. Die Implementierung der Funktion kann im beiliegenden Quellcode nachvollzogen werden. \\
 \\
 Analog zur Trainingsmethode \texttt{fit\_generator} wird zur Validierung des Modells die Methode \texttt{evaluate\_generator} verwendet. Diese evaluiert das fertig trainierte Modell wie es schon als Teil des Trainings für jede Epoche geschehen ist. Zurückgegeben wird ein Score bestehend aus \textit{loss} und \textit{accuracy} des Modells. \\ 
 \\
@@ -437,7 +437,6 @@ if __name__ == '__main__':
                                                     batch_size, epochs, "CNN1")
 	\end{minted}
 \end{listing} \ \\
-\\
 Das Listing \ref{lst:start-training} zeigt einen Ausschnitt aus der Main-Funktion des Programms, mit dem die Daten vorbereitet und das Training, exemplarisch für das erste Modell, gestartet wird. Die genutzten Parameter \texttt{epochs} und \texttt{batch\_size} sind dabei willkürlich, aber in sinnvollen Grenzen, gewählt.
 
 \section{Auswertung der Trainingsergebnisse}
@@ -560,4 +559,4 @@ Durch die praktische Arbeit mit neuronalen Netzen wurden im Rahmen dieser Arbeit
 	\item Die Trainings-Accuracy kann niedriger als die Test-/Validierungs-Accuracy sein.
 	\item Die Bildausschnitte, mit denen trainiert wird, bestimmen die Ausschnitte auf denen ein Modell sinnvoll angewandt werden kann.
 \end{itemize} \ \\
-Wie auch aus der Arbeit herauszulesen ist, fiel auch die Bewertung der Modelle schwer, da sie in den Werten sehr nah aneinander liegen. Dass ausgerechnet die beiden Modelle mit der höchsten Accuracy in der Validierung im Test mit externen Bildausschnitten einen Fehler machten, erschwert dies zusätzlich. Es bleibt die Frage, ob die Ergebnisse durch einen größeren Datensatz für Training, Testing und Validierung klarer ausgefallen wären.
+Wie auch aus der Arbeit herauszulesen ist, fiel auch die Bewertung der Modelle schwer, da sie in den Werten sehr nah aneinander liegen. Das ausgerechnet die beiden Modelle mit der höchsten Accuracy in der Validierung im Test mit externen Bildausschnitten einen Fehler machten, erschwert dies zusätzlich. Es es stellt sich die Frage, ob die Ergebnisse durch einen größeren Datensatz für Training, Testing und Validierung klarer ausgefallen wären.
