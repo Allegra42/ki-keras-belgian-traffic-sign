@@ -2,7 +2,7 @@
 
 This project was created for the AI course at the University of Pforzheim in the Master's class Embedded Systems.
 It's goal was to get in touch with artifical intelligence and neural networks based on the Belgian Traffic Sign Dataset.
-Therefore, the[project report](https://github.com/Allegra42/ki-keras-belgian-traffic-sign/blob/master/report/Ausarbeitung_Anna-Lena_Marx.pdf)
+Therefore, the [project report](https://github.com/Allegra42/ki-keras-belgian-traffic-sign/blob/master/report/Ausarbeitung_Anna-Lena_Marx.pdf)
 as TeX and PDF is also a part of this repository.
 
 ## Setup project
